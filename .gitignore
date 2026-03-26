@@ -16,7 +16,8 @@ frontend/my_social_media/.env
 *.log
 
 ### ===== IDE =====
-.idea/
+backend/.idea
+.idea
 .vscode/
 *.iml
 *.ipr

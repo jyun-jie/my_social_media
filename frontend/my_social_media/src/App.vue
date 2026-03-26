@@ -1,13 +1,29 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Login from './components/Login.vue'
 import Register from './components/Register.vue'
+import PostForm from './components/PostForm.vue'
+import PostList from './components/PostList.vue'
 
 const currentView = ref('login')
 const isLoggedIn = ref(false)
+const currentUserId = ref(null)
+const editingPost = ref(null)
+const postListRef = ref(null)
+
+const parseJwtToken = (token) => {
+  try {
+    const base64Url = token.split('.')[1]
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+    const payload = JSON.parse(window.atob(base64))
+    return parseInt(payload.sub)
+  } catch (e) {
+    return null
+  }
+}
 
 const handleLoginSuccess = (token) => {
-  console.log('登入成功，Token:', token)
+  currentUserId.value = parseJwtToken(token)
   isLoggedIn.value = true
 }
 
@@ -18,8 +34,40 @@ const handleRegisterSuccess = () => {
 const logout = () => {
   localStorage.removeItem('token')
   isLoggedIn.value = false
+  currentUserId.value = null
   currentView.value = 'login'
+  editingPost.value = null
 }
+
+const handlePostCreated = () => {
+  editingPost.value = null
+  postListRef.value?.fetchPosts()
+}
+
+const handlePostUpdated = () => {
+  editingPost.value = null
+  postListRef.value?.fetchPosts()
+}
+
+const handleEditPost = (post) => {
+  editingPost.value = post
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+const cancelEdit = () => {
+  editingPost.value = null
+}
+
+onMounted(() => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    const userId = parseJwtToken(token)
+    if (userId) {
+      currentUserId.value = userId
+      isLoggedIn.value = true
+    }
+  }
+})
 </script>
 
 <template>
@@ -31,8 +79,19 @@ const logout = () => {
   </header>
 
   <main>
-    <div v-if="isLoggedIn" class="logged-in-message">
-      <p>歡迎回來！您已成功登入。</p>
+    <div v-if="isLoggedIn">
+      <PostForm
+        :edit-post="editingPost"
+        @post-created="handlePostCreated"
+        @post-updated="handlePostUpdated"
+        @cancel-edit="cancelEdit"
+      />
+
+      <PostList
+        ref="postListRef"
+        :current-user-id="currentUserId"
+        @edit-post="handleEditPost"
+      />
     </div>
 
     <Login
@@ -76,17 +135,5 @@ const logout = () => {
 
 .logout-btn:hover {
   background: #c0392b;
-}
-
-.logged-in-message {
-  text-align: center;
-  padding: 2rem;
-  background: hsla(160, 100%, 37%, 0.1);
-  border-radius: 8px;
-}
-
-.logged-in-message p {
-  color: hsla(160, 100%, 37%, 1);
-  font-size: 1.2rem;
 }
 </style>

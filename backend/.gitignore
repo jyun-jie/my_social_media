@@ -12,3 +12,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Test source files
+src/test/

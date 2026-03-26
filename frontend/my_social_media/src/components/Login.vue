@@ -45,7 +45,7 @@ const submit = async () => {
     const response = await authApi.login(loginInfo)
 
     if (response.data.code === 200) {
-      const token = response.data.data
+      const token = response.data.message
       localStorage.setItem('token', token)
       emit('login-success', token)
     } else {

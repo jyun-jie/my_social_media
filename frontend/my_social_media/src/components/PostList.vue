@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { postApi } from '../api/post'
+import CommentList from './CommentList.vue'
 
 const props = defineProps({
   currentUserId: {
@@ -87,6 +88,11 @@ defineExpose({ fetchPosts })
           <button @click="emit('edit-post', post)" class="edit-btn">編輯</button>
           <button @click="deletePost(post.postId)" class="delete-btn">刪除</button>
         </div>
+
+        <CommentList
+          :post-id="post.postId"
+          :current-user-id="currentUserId"
+        />
       </div>
     </div>
   </div>

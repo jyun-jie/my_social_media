@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: project.service.serviceImpl.UserServiceImplTest
 -------------------------------------------------------------------------------
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.326 s -- in project.service.serviceImpl.UserServiceImplTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.233 s -- in project.service.serviceImpl.UserServiceImplTest

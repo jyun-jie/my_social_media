@@ -1,0 +1,30 @@
+### ===== Backend (Spring Boot) =====
+backend/target/
+backend/*.log
+backend/.mvn/wrapper/maven-wrapper.jar
+backend/spec.*
+backend/AGENTS.md
+
+
+### ===== Frontend (Vue / Vite) =====
+frontend/my_social_media/node_modules/
+frontend/my_social_media/dist/
+frontend/my_social_media/.vite/
+frontend/my_social_media/.env
+
+### ===== Logs =====
+*.log
+
+### ===== IDE =====
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+### ===== OS =====
+.DS_Store
+Thumbs.db
+
+### ===== Others =====
+.env

@@ -1,3 +1,6 @@
-C:\my_download\social_media\backend\src\test\java\project\BackendApplicationTests.java
-C:\my_download\social_media\backend\src\test\java\project\service\serviceImpl\UserServiceImplTest.java
-C:\my_download\social_media\backend\src\test\java\project\controller\AuthControllerTest.java
+C:\my_download\my_social_media\backend\src\test\java\project\common\AuthUtilTest.java
+C:\my_download\my_social_media\backend\src\test\java\project\controller\AuthControllerTest.java
+C:\my_download\my_social_media\backend\src\test\java\project\service\serviceImpl\UserServiceImplTest.java
+C:\my_download\my_social_media\backend\src\test\java\project\Config\JwtAuthenticationFilterTest.java
+C:\my_download\my_social_media\backend\src\test\java\project\service\UserDetailsServiceImplTest.java
+C:\my_download\my_social_media\backend\src\test\java\project\BackendApplicationTests.java

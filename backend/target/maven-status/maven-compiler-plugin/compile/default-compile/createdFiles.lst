@@ -1,2 +1,5 @@
 project\common\JwtUtil.class
+project\common\AuthUtil.class
+project\service\UserDetailsServiceImpl.class
+project\Config\JwtAuthenticationFilter.class
 project\Dto\LoginRequest.class

@@ -14,7 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import project.common.JwtUtil;
-import project.service.UserDetailsServiceImpl;
+import project.service.serviceImpl.UserDetailsServiceImpl;
 
 import java.io.IOException;
 import java.util.Collections;

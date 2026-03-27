@@ -1,8 +1,9 @@
 <script setup>
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { authApi } from '../api/auth'
 
-const emit = defineEmits(['login-success', 'switch-to-register'])
+const router = useRouter()
 
 const loginInfo = reactive({
   phoneNumber: '',
@@ -47,7 +48,7 @@ const submit = async () => {
     if (response.data.code === 200) {
       const token = response.data.message
       localStorage.setItem('token', token)
-      emit('login-success', token)
+      router.push('/home')
     } else {
       errorMessage.value = response.data.message || '登入失敗'
     }
@@ -99,7 +100,7 @@ const submit = async () => {
 
     <p class="switch-text">
       還沒有帳號？
-      <a href="#" @click.prevent="emit('switch-to-register')">註冊</a>
+      <router-link to="/register">註冊</router-link>
     </p>
   </div>
 </template>
@@ -184,13 +185,13 @@ button:disabled {
   color: var(--color-text);
 }
 
-.switch-text a {
+.switch-text a, .switch-text router-link {
   color: hsla(160, 100%, 37%, 1);
   text-decoration: none;
   font-weight: 500;
 }
 
-.switch-text a:hover {
+.switch-text a:hover, .switch-text router-link:hover {
   text-decoration: underline;
 }
 </style>

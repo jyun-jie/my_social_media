@@ -1,8 +1,9 @@
 <script setup>
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { authApi } from '../api/auth'
 
-const emit = defineEmits(['register-success', 'switch-to-login'])
+const router = useRouter()
 
 const userInfo = reactive({
   phoneNumber: '',
@@ -51,7 +52,7 @@ const submit = async () => {
     if (response.data.code === 200) {
       successMessage.value = '註冊成功！即將跳轉到登入頁面...'
       setTimeout(() => {
-        emit('register-success')
+        router.push('/login')
       }, 1500)
     } else {
       errorMessage.value = response.data.message || '註冊失敗'
@@ -127,7 +128,7 @@ const submit = async () => {
 
     <p class="switch-text">
       已經有帳號？
-      <a href="#" @click.prevent="emit('switch-to-login')">登入</a>
+      <router-link to="/login">登入</router-link>
     </p>
   </div>
 </template>

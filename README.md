@@ -27,11 +27,22 @@
 - backend/src/DB/stored_procedures.sql: 設定儲存程序
 - backend/src/DB/reset_dev_data.sql: 每次啟動前清空資料的步驟
 
-設計與測試
-- 有單元測試（驗證策略）
+功能總覽
+
+帳號系統：註冊、登入、Token 刷新、閒置自動登出、多分頁同步登出
+發文功能：新增 / 查詢 / 編輯 / 刪除
+留言功能：新增 / 查詢 / 刪除
+前端互動：路由守衛、自動帶入 Token、401 處理
+
+安全性機制
+
+JWT、BCrypt、Stored Procedure 防 SQL Injection、XSS 防護、交易管理、閒置保護、多分頁同步
+
+
 
 流程圖
   使用者 -> 註冊/登入 -> 獲取 JWT -> 發文/留言 -> 伺服端透過 Stored Procedures 存取資料
 
+詳情安裝流程可以查看前後端的Readme.md檔案
 
 

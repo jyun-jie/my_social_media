@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import Login from './components/Login.vue'
 import Register from './components/Register.vue'
 import PostForm from './components/PostForm.vue'
@@ -10,6 +10,10 @@ const isLoggedIn = ref(false)
 const currentUserId = ref(null)
 const editingPost = ref(null)
 const postListRef = ref(null)
+
+// 自動登出計時器
+const TIMEOUT_DURATION = 15 * 60 * 1000 //  分鐘（毫秒）
+let timeoutId = null
 
 const parseJwtToken = (token) => {
   try {
@@ -22,9 +26,46 @@ const parseJwtToken = (token) => {
   }
 }
 
+// 重設自動登出計時器
+const resetTimeout = () => {
+  if (timeoutId) {
+    clearTimeout(timeoutId)
+  }
+  if (isLoggedIn.value) {
+    timeoutId = setTimeout(() => {
+      alert('閒置過久，已自動登出')
+      logout()
+    }, TIMEOUT_DURATION)
+  }
+}
+
+// 監聽使用者活動
+const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click']
+
+const handleUserActivity = () => {
+  resetTimeout()
+}
+
+const startListening = () => {
+  activityEvents.forEach(event => {
+    document.addEventListener(event, handleUserActivity, { passive: true })
+  })
+}
+
+const stopListening = () => {
+  activityEvents.forEach(event => {
+    document.removeEventListener(event, handleUserActivity)
+  })
+  if (timeoutId) {
+    clearTimeout(timeoutId)
+    timeoutId = null
+  }
+}
+
 const handleLoginSuccess = (token) => {
   currentUserId.value = parseJwtToken(token)
   isLoggedIn.value = true
+  resetTimeout()
 }
 
 const handleRegisterSuccess = () => {
@@ -37,21 +78,25 @@ const logout = () => {
   currentUserId.value = null
   currentView.value = 'login'
   editingPost.value = null
+  stopListening()
 }
 
 const handlePostCreated = () => {
   editingPost.value = null
   postListRef.value?.fetchPosts()
+  resetTimeout()
 }
 
 const handlePostUpdated = () => {
   editingPost.value = null
   postListRef.value?.fetchPosts()
+  resetTimeout()
 }
 
 const handleEditPost = (post) => {
   editingPost.value = post
   window.scrollTo({ top: 0, behavior: 'smooth' })
+  resetTimeout()
 }
 
 const cancelEdit = () => {
@@ -65,7 +110,23 @@ onMounted(() => {
     if (userId) {
       currentUserId.value = userId
       isLoggedIn.value = true
+      startListening()
+      resetTimeout()
     }
+  }
+})
+
+onUnmounted(() => {
+  stopListening()
+})
+
+// 監聽登入狀態變化
+watch(isLoggedIn, (newValue) => {
+  if (newValue) {
+    startListening()
+    resetTimeout()
+  } else {
+    stopListening()
   }
 })
 </script>

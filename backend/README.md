@@ -26,22 +26,24 @@
 - 目的：提供一組可直接從空資料庫建立整套後端環境的步驟，包含資料庫初始化、種子資料、儲存程序、與專案啟動。
 - 需求與環境：Java 17+、Maven、MySQL、Git、JDK、資料庫帳號與密碼。
 - 步驟：
-  1) 建立資料庫
-     - 1. mysql -u root -p ;
-     - 2. CREATE DATABASE my_social_media ; 
-     - 3. CREATE USER admin@localhost IDENTIFIED BY '123456' ;
-     - 4. GRANT ALL PRIVILEGES ON my_social_media.* TO 'admin'@'localhost' ;
-     - 5. FLUSH PRIVILEGES ;
-  2) 導入資料庫結構與預設資料
-     - 導入 schema：`backend/src/DB/schema.sql`
-     - 重置資料：`backend/src/DB/reset_dev_data.sql`
-     - 注入初始種子資料：`backend/src/DB/data.sql`
-     - 導入儲存程序：`backend/src/DB/stored_procedures.sql`
-  3) 事務與交易
-     - 確保在需要的場合使用 @Transactional 以確保多表變更的原子性。
-  4) 編譯與啟動
-     - 在專案根目錄執行：`mvn clean package`，完成後 `java -jar backend/target/<artifact>.jar`  或 `mvn spring-boot:run`。
-  5) 驗證 API
-     - 測試路由：`/api/auth/register`, `/api/auth/login`, `/api/posts` 等。
-  6) 常見問題
-     - 若資料庫連線/憑證有誤，請檢查 `application.properties` 的資料庫設定是否正確。
+    1) 建立資料庫
+        - 1. mysql -u root -p ;
+        - 2. CREATE DATABASE my_social_media ;
+        - 3. CREATE USER admin@localhost IDENTIFIED BY '123456' ;
+        - 4. GRANT ALL PRIVILEGES ON my_social_media.* TO 'admin'@'localhost' ;
+        - 5. FLUSH PRIVILEGES ;
+    2) 導入資料庫結構與預設資料
+        - 導入 schema：`backend/src/DB/schema.sql`
+        - 重置資料：`backend/src/DB/reset_dev_data.sql`
+        - 注入初始種子資料：`backend/src/DB/data.sql`
+        - 導入儲存程序：`backend/src/DB/stored_procedures.sql`
+    3) 事務與交易
+        - 確保在需要的場合使用 @Transactional 以確保多表變更的原子性。
+    4) 編譯與啟動
+        - 在專案根目錄執行：`mvn clean package`，完成後 `java -jar backend/target/<artifact>.jar`  或 `mvn spring-boot:run`。
+    5) 驗證 API
+        - 測試路由：`/api/auth/register`, `/api/auth/login`, `/api/posts` 等。
+    6) 常見問題
+        - 若資料庫連線/憑證有誤，請檢查 `application.properties` 的資料庫設定是否正確。
+
+

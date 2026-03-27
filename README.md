@@ -44,5 +44,3 @@ JWT、BCrypt、Stored Procedure 防 SQL Injection、XSS 防護、交易管理、
   使用者 -> 註冊/登入 -> 獲取 JWT -> 發文/留言 -> 伺服端透過 Stored Procedures 存取資料
 
 詳情安裝流程可以查看前後端的Readme.md檔案
-
-

@@ -15,7 +15,7 @@
 - 環境：Node.js 18+、npm、瀏覽器。
 - 步驟：
   1) 安裝依賴
-     - 在專案根目錄執行：`cd my_social/media && npm install`
+     - 在專案根目錄執行：`cd frontend/my_social_media && npm install`
   2) 啟動開發伺服器
      - `npm run dev`
   3) 對接後端 API

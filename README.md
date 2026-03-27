@@ -21,11 +21,10 @@
 
 快速開始流程
 
-資料庫種子與補充說明
-- backend/src/DB/schema.sql: 建表與欄位
-- backend/src/DB/data.sql: 初始資料（種子資料）
-- backend/src/DB/stored_procedures.sql: 設定儲存程序
-- backend/src/DB/reset_dev_data.sql: 每次啟動前清空資料的步驟
+- 依照前後端Readme.md 建置完成
+- 透過 UI 操作註冊、登入、發文、留言，前端會帶著 JWT 自動附在請求頭(需先註冊)。
+範本 手機: 0911222333 密碼: 12345678 email :xxxxx@gmail.com 使用者名稱:chen 
+
 
 功能總覽
 

@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import project.repository.UserRepository;
+import project.repository.UserRepositoryCustom;
 
 import java.util.Collections;
 
@@ -16,15 +16,15 @@ import java.util.Collections;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepositoryCustom userRepositoryCustom;
 
     @Override
     public UserDetails loadUserByUsername(String phoneNumber) throws UsernameNotFoundException {
-        project.entity.User user = userRepository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> {
-                    log.warn("找不到使用者，手機號碼: {}", phoneNumber);
-                    return new UsernameNotFoundException("找不到此手機號碼的使用者");
-                });
+        project.entity.User user = userRepositoryCustom.findByPhoneNumber(phoneNumber);
+        if (user == null) {
+            log.warn("找不到使用者，手機號碼: {}", phoneNumber);
+            throw new UsernameNotFoundException("找不到此手機號碼的使用者");
+        }
 
         return new User(
                 user.getUserId().toString(),
@@ -34,11 +34,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public UserDetails loadUserById(Long userId) {
-        project.entity.User user = userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.warn("找不到使用者，ID: {}", userId);
-                    return new UsernameNotFoundException("找不到此使用者");
-                });
+        project.entity.User user = userRepositoryCustom.findById(userId);
+        if (user == null) {
+            log.warn("找不到使用者，ID: {}", userId);
+            throw new UsernameNotFoundException("找不到此使用者");
+        }
 
         return new User(
                 user.getUserId().toString(),

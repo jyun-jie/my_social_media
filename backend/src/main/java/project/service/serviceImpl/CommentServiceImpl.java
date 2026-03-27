@@ -8,10 +8,9 @@ import project.Dto.CommentRequest;
 import project.Dto.CommentResponse;
 import project.entity.Comment;
 import project.entity.Post;
-import project.entity.User;
-import project.repository.CommentRepository;
-import project.repository.PostRepository;
-import project.repository.UserRepository;
+import project.repository.CommentRepositoryCustom;
+import project.repository.PostRepositoryCustom;
+import project.repository.UserRepositoryCustom;
 import project.service.CommentService;
 
 import java.util.List;
@@ -22,37 +21,34 @@ import java.util.stream.Collectors;
 public class CommentServiceImpl implements CommentService {
 
     @Autowired
-    private CommentRepository commentRepository;
+    private CommentRepositoryCustom commentRepositoryCustom;
 
     @Autowired
-    private PostRepository postRepository;
+    private PostRepositoryCustom postRepositoryCustom;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepositoryCustom userRepositoryCustom;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommentResponse addComment(Long userId, Long postId, CommentRequest request) {
         log.info("開始處理新增留言請求，使用者 ID: {}, 發文 ID: {}", userId, postId);
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> {
-                    log.warn("發文不存在，ID: {}", postId);
-                    return new RuntimeException("發文不存在");
-                });
+        Post post = postRepositoryCustom.findById(postId);
+        if (post == null) {
+            log.warn("發文不存在，ID: {}", postId);
+            throw new RuntimeException("發文不存在");
+        }
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.warn("使用者不存在，ID: {}", userId);
-                    return new RuntimeException("使用者不存在");
-                });
+        if (userRepositoryCustom.findById(userId) == null) {
+            log.warn("使用者不存在，ID: {}", userId);
+            throw new RuntimeException("使用者不存在");
+        }
 
-        Comment comment = new Comment();
-        comment.setUser(user);
-        comment.setPost(post);
-        comment.setContent(request.getContent());
-
-        comment = commentRepository.save(comment);
+        Comment comment = commentRepositoryCustom.addComment(userId, postId, request.getContent());
+        if (comment == null) {
+            throw new RuntimeException("新增留言失敗");
+        }
         log.info("新增留言成功，留言 ID: {}", comment.getCommentId());
 
         return convertToResponse(comment);
@@ -62,13 +58,13 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentResponse> getCommentsByPostId(Long postId) {
         log.info("開始取得發文的所有留言，發文 ID: {}", postId);
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> {
-                    log.warn("發文不存在，ID: {}", postId);
-                    return new RuntimeException("發文不存在");
-                });
+        Post post = postRepositoryCustom.findById(postId);
+        if (post == null) {
+            log.warn("發文不存在，ID: {}", postId);
+            throw new RuntimeException("發文不存在");
+        }
 
-        List<Comment> comments = commentRepository.findByPostPostIdOrderByCreatedAtAsc(postId);
+        List<Comment> comments = commentRepositoryCustom.findByPostId(postId);
         log.info("取得 {} 則留言", comments.size());
 
         return comments.stream().map(this::convertToResponse).collect(Collectors.toList());
@@ -79,18 +75,7 @@ public class CommentServiceImpl implements CommentService {
     public void deleteComment(Long commentId, Long userId) {
         log.info("開始處理刪除留言請求，留言 ID: {}, 使用者 ID: {}", commentId, userId);
 
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> {
-                    log.warn("留言不存在，ID: {}", commentId);
-                    return new RuntimeException("留言不存在");
-                });
-
-        if (!comment.getUser().getUserId().equals(userId)) {
-            log.warn("無權限刪除此留言，留言 ID: {}, 使用者 ID: {}", commentId, userId);
-            throw new RuntimeException("無權限刪除此留言");
-        }
-
-        commentRepository.delete(comment);
+        commentRepositoryCustom.deleteComment(commentId, userId);
         log.info("刪除留言成功，留言 ID: {}", commentId);
     }
 

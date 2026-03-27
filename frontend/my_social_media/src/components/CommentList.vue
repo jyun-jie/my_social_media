@@ -130,26 +130,28 @@ defineExpose({ fetchComments })
 <style scoped>
 .comment-section {
   margin-top: 0.5rem;
-  border-top: 1px solid var(--color-border);
-  padding-top: 0.5rem;
 }
 
 .toggle-btn {
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem 0;
   background: transparent;
   color: hsla(160, 100%, 37%, 1);
   border: none;
   cursor: pointer;
   font-size: 0.85rem;
-  padding: 0;
+  font-weight: 500;
+  opacity: 0.8;
 }
 
 .toggle-btn:hover {
+  opacity: 1;
   text-decoration: underline;
 }
 
 .comments-container {
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
 }
 
 .loading, .empty-message {
@@ -157,57 +159,65 @@ defineExpose({ fetchComments })
   padding: 0.5rem;
   color: var(--color-text);
   font-size: 0.9rem;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .comments-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .comment-item {
-  padding: 0.5rem;
-  background: var(--color-background);
-  border-radius: 4px;
-  border: 1px solid var(--color-border);
+  padding: 0.75rem;
+  background: var(--color-background-soft);
+  border-radius: 0.75rem;
 }
 
 .comment-header {
   display: flex;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  margin-bottom: 0.25rem;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
 }
 
 .author {
-  font-weight: bold;
-  color: hsla(160, 100%, 37%, 1);
+  font-weight: 600;
+  color: var(--color-heading);
 }
 
 .date {
   color: var(--color-text);
-  opacity: 0.7;
+  opacity: 0.4;
+  font-size: 0.8rem;
+}
+
+.date::before {
+  content: '·';
+  margin-right: 0.25rem;
 }
 
 .comment-content {
   font-size: 0.9rem;
   color: var(--color-text);
-  margin-bottom: 0.25rem;
+  line-height: 1.5;
   white-space: pre-wrap;
 }
 
 .delete-btn {
-  padding: 0.2rem 0.5rem;
-  background: #e74c3c;
-  color: white;
+  padding: 0.15rem 0.4rem;
+  background: transparent;
+  color: #e74c3c;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
   font-size: 0.75rem;
+  opacity: 0.6;
+  margin-top: 0.25rem;
 }
 
 .delete-btn:hover {
-  background: #c0392b;
+  opacity: 1;
+  text-decoration: underline;
 }
 </style>

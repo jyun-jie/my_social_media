@@ -71,69 +71,156 @@ onMounted(() => {
 </script>
 
 <template>
-  <header>
-    <div class="header-content">
-      <h1>社群媒體平台</h1>
-      <button v-if="isLoggedIn" @click="logout" class="logout-btn">登出</button>
+  <div class="app-container">
+    <!-- 已登入 -->
+    <template v-if="isLoggedIn">
+      <!-- 頂部導航欄 -->
+      <header class="header">
+        <div class="header-left">
+          <h1>社群媒體平台</h1>
+        </div>
+        <div class="header-right">
+          <button @click="logout" class="logout-btn">登出</button>
+        </div>
+      </header>
+
+      <!-- 主要內容區 -->
+      <main class="main-content">
+        <PostForm
+          :edit-post="editingPost"
+          @post-created="handlePostCreated"
+          @post-updated="handlePostUpdated"
+          @cancel-edit="cancelEdit"
+        />
+
+        <PostList
+          ref="postListRef"
+          :current-user-id="currentUserId"
+          @edit-post="handleEditPost"
+        />
+      </main>
+    </template>
+
+    <!-- 未登入：顯示登入/註冊表單 -->
+    <div v-else class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <h2>社群媒體平台</h2>
+          <p>與朋友分享你的生活</p>
+        </div>
+
+        <Login
+          v-if="currentView === 'login'"
+          @login-success="handleLoginSuccess"
+          @switch-to-register="currentView = 'register'"
+        />
+
+        <Register
+          v-else
+          @register-success="handleRegisterSuccess"
+          @switch-to-login="currentView = 'login'"
+        />
+      </div>
     </div>
-  </header>
-
-  <main>
-    <div v-if="isLoggedIn">
-      <PostForm
-        :edit-post="editingPost"
-        @post-created="handlePostCreated"
-        @post-updated="handlePostUpdated"
-        @cancel-edit="cancelEdit"
-      />
-
-      <PostList
-        ref="postListRef"
-        :current-user-id="currentUserId"
-        @edit-post="handleEditPost"
-      />
-    </div>
-
-    <Login
-      v-else-if="currentView === 'login'"
-      @login-success="handleLoginSuccess"
-      @switch-to-register="currentView = 'register'"
-    />
-
-    <Register
-      v-else
-      @register-success="handleRegisterSuccess"
-      @switch-to-login="currentView = 'login'"
-    />
-  </main>
+  </div>
 </template>
 
 <style scoped>
-.header-content {
+.app-container {
+  min-height: 100vh;
+  background: var(--color-background);
+}
+
+/* 頂部導航欄 */
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
-  margin-bottom: 1rem;
+  padding: 1rem 2rem;
   border-bottom: 1px solid var(--color-border);
+  background: var(--color-background);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.header-content h1 {
+.header-left h1 {
+  font-size: 1.25rem;
   color: var(--color-heading);
-  font-size: 1.5rem;
+  margin: 0;
 }
 
 .logout-btn {
-  padding: 0.5rem 1rem;
-  background: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  padding: 0.5rem 1.5rem;
+  background: transparent;
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+  border-radius: 9999px;
   cursor: pointer;
-  transition: background 0.3s;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s;
 }
 
 .logout-btn:hover {
-  background: #c0392b;
+  background: #e74c3c;
+  color: white;
+}
+
+/* 主要內容區 */
+.main-content {
+  max-width: 700px;
+  margin: 0 auto;
+  background: var(--color-background);
+  border-left: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+  min-height: calc(100vh - 60px);
+}
+
+/* 登入/註冊頁面 */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--color-background-soft);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.auth-header h2 {
+  color: var(--color-heading);
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+}
+
+.auth-header p {
+  color: var(--color-text);
+  opacity: 0.7;
+  margin: 0;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .main-content {
+    border-left: none;
+    border-right: none;
+  }
+
+  .header {
+    padding: 1rem;
+  }
 }
 </style>

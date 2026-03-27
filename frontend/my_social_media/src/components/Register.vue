@@ -134,9 +134,7 @@ const submit = async () => {
 
 <style scoped>
 .register-container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
 }
 
 .register-container h2 {
@@ -153,16 +151,18 @@ const submit = async () => {
   display: block;
   margin-bottom: 0.5rem;
   color: var(--color-text);
+  font-weight: 500;
 }
 
 .form-group input {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.75rem 1rem;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border-radius: 9999px;
   background: var(--color-background);
   color: var(--color-text);
   font-size: 1rem;
+  box-sizing: border-box;
 }
 
 .form-group input:focus {
@@ -177,18 +177,18 @@ const submit = async () => {
 
 .error-message {
   color: #e74c3c;
-  background: #fdf2f2;
-  padding: 0.75rem;
-  border-radius: 4px;
+  background: rgba(231, 76, 60, 0.1);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
   margin-bottom: 1rem;
   font-size: 0.9rem;
 }
 
 .success-message {
   color: #27ae60;
-  background: #f0fff4;
-  padding: 0.75rem;
-  border-radius: 4px;
+  background: rgba(39, 174, 96, 0.1);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
   margin-bottom: 1rem;
   font-size: 0.9rem;
 }
@@ -199,8 +199,9 @@ button {
   background: hsla(160, 100%, 37%, 1);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 9999px;
   font-size: 1rem;
+  font-weight: bold;
   cursor: pointer;
   transition: background 0.3s;
 }
@@ -223,6 +224,7 @@ button:disabled {
 .switch-text a {
   color: hsla(160, 100%, 37%, 1);
   text-decoration: none;
+  font-weight: 500;
 }
 
 .switch-text a:hover {

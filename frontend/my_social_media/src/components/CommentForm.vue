@@ -80,13 +80,14 @@ const submit = async () => {
 .form-row {
   display: flex;
   gap: 0.5rem;
+  align-items: center;
 }
 
 input {
   flex: 1;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border-radius: 9999px;
   background: var(--color-background);
   color: var(--color-text);
   font-size: 0.9rem;
@@ -107,10 +108,12 @@ button {
   background: hsla(160, 100%, 37%, 1);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 9999px;
   cursor: pointer;
   font-size: 0.9rem;
+  font-weight: bold;
   white-space: nowrap;
+  transition: background 0.3s;
 }
 
 button:hover:not(:disabled) {
@@ -126,5 +129,6 @@ button:disabled {
   color: #e74c3c;
   font-size: 0.8rem;
   margin-top: 0.25rem;
+  padding-left: 1rem;
 }
 </style>

@@ -5,30 +5,27 @@ import { authApi } from '../api/auth'
 
 const router = useRouter()
 
-const userInfo = reactive({
+const loginInfo = reactive({
   phoneNumber: '',
-  password: '',
-  email: '',
-  userName: ''
+  password: ''
 })
 
 const isLoading = ref(false)
 const errorMessage = ref('')
-const successMessage = ref('')
 
 const validateForm = () => {
-  if (!userInfo.phoneNumber || !userInfo.password) {
+  if (!loginInfo.phoneNumber || !loginInfo.password) {
     errorMessage.value = '手機號碼與密碼為必填欄位！'
     return false
   }
 
   const phoneRegex = /^09\d{8}$/
-  if (!phoneRegex.test(userInfo.phoneNumber)) {
+  if (!phoneRegex.test(loginInfo.phoneNumber)) {
     errorMessage.value = '手機號碼格式錯誤，需為 09 開頭共 10 碼'
     return false
   }
 
-  if (userInfo.password.length < 8) {
+  if (loginInfo.password.length < 8) {
     errorMessage.value = '密碼長度至少 8 位'
     return false
   }
@@ -38,7 +35,6 @@ const validateForm = () => {
 
 const submit = async () => {
   errorMessage.value = ''
-  successMessage.value = ''
 
   if (!validateForm()) {
     return
@@ -47,15 +43,14 @@ const submit = async () => {
   isLoading.value = true
 
   try {
-    const response = await authApi.register(userInfo)
+    const response = await authApi.login(loginInfo)
 
     if (response.data.code === 200) {
-      successMessage.value = '註冊成功！即將跳轉到登入頁面...'
-      setTimeout(() => {
-        router.push('/login')
-      }, 1500)
+      const token = response.data.message
+      localStorage.setItem('token', token)
+      router.push('/home')
     } else {
-      errorMessage.value = response.data.message || '註冊失敗'
+      errorMessage.value = response.data.message || '登入失敗'
     }
   } catch (error) {
     console.error('API 請求失敗:', error)
@@ -71,14 +66,14 @@ const submit = async () => {
 </script>
 
 <template>
-  <div class="register-container">
-    <h2>註冊</h2>
+  <div class="login-container">
+    <h2>登入</h2>
 
     <div class="form-group">
       <label>手機號碼：</label>
       <input
         type="text"
-        v-model="userInfo.phoneNumber"
+        v-model="loginInfo.phoneNumber"
         placeholder="例如: 0912345678"
         :disabled="isLoading"
       />
@@ -88,29 +83,10 @@ const submit = async () => {
       <label>密碼：</label>
       <input
         type="password"
-        v-model="userInfo.password"
-        placeholder="請設定密碼"
+        v-model="loginInfo.password"
+        placeholder="請輸入密碼"
         :disabled="isLoading"
-      />
-    </div>
-
-    <div class="form-group">
-      <label>電子郵件：</label>
-      <input
-        type="email"
-        v-model="userInfo.email"
-        placeholder="example@mail.com"
-        :disabled="isLoading"
-      />
-    </div>
-
-    <div class="form-group">
-      <label>使用者名稱：</label>
-      <input
-        type="text"
-        v-model="userInfo.userName"
-        placeholder="請輸入顯示名稱"
-        :disabled="isLoading"
+        @keyup.enter="submit"
       />
     </div>
 
@@ -118,27 +94,23 @@ const submit = async () => {
       {{ errorMessage }}
     </div>
 
-    <div v-if="successMessage" class="success-message">
-      {{ successMessage }}
-    </div>
-
     <button @click="submit" :disabled="isLoading">
-      {{ isLoading ? '註冊中...' : '提交註冊' }}
+      {{ isLoading ? '登入中...' : '登入' }}
     </button>
 
     <p class="switch-text">
-      已經有帳號？
-      <router-link to="/login">登入</router-link>
+      還沒有帳號？
+      <router-link to="/register">註冊</router-link>
     </p>
   </div>
 </template>
 
 <style scoped>
-.register-container {
+.login-container {
   width: 100%;
 }
 
-.register-container h2 {
+.login-container h2 {
   text-align: center;
   margin-bottom: 1.5rem;
   color: var(--color-heading);
@@ -185,15 +157,6 @@ const submit = async () => {
   font-size: 0.9rem;
 }
 
-.success-message {
-  color: #27ae60;
-  background: rgba(39, 174, 96, 0.1);
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-}
-
 button {
   width: 100%;
   padding: 0.75rem;
@@ -222,13 +185,13 @@ button:disabled {
   color: var(--color-text);
 }
 
-.switch-text a {
+.switch-text a, .switch-text router-link {
   color: hsla(160, 100%, 37%, 1);
   text-decoration: none;
   font-weight: 500;
 }
 
-.switch-text a:hover {
+.switch-text a:hover, .switch-text router-link:hover {
   text-decoration: underline;
 }
 </style>

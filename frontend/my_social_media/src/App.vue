@@ -1,17 +1,11 @@
 <script setup>
-import Register from './components/Register.vue'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <header>
-    
-  </header>
-
-  <main>
-    <Register />
-  </main>
+  <RouterView />
 </template>
 
-<style scoped>
-
+<style>
+/* 全域樣式已在 main.css 定義 */
 </style>

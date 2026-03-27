@@ -1,9 +1,9 @@
 -- =============================================
--- Stored Procedure 定义
--- 用途：将数据库操作逻辑封装在数据库端
+-- Stored Procedure 定義
+-- 用途：將資料庫操作邏輯封裝在資料庫端
 -- =============================================
 
--- 删除旧的 Procedure（如果存在）
+-- 刪除舊的 Procedure（如果存在）
 DROP PROCEDURE IF EXISTS sp_register_user;
 DROP PROCEDURE IF EXISTS sp_login_user;
 DROP PROCEDURE IF EXISTS sp_get_user_by_id;
@@ -18,12 +18,12 @@ DROP PROCEDURE IF EXISTS sp_get_comments_by_post_id;
 DROP PROCEDURE IF EXISTS sp_delete_comment;
 
 -- =============================================
--- User 相关 Stored Procedure
+-- User 相關 Stored Procedure
 -- =============================================
 
--- sp_register_user: 注册新用户
--- 参数：p_user_name, p_phone_number, p_email, p_password
--- 说明：将新用户数据插入 user 表
+-- sp_register_user: 註冊新使用者
+-- 參數：p_user_name, p_phone_number, p_email, p_password
+-- 說明：將新使用者資料插入 user 表
 CREATE PROCEDURE sp_register_user(
     IN p_user_name VARCHAR(50),
     IN p_phone_number VARCHAR(20),
@@ -35,9 +35,9 @@ BEGIN
     VALUES (p_user_name, p_phone_number, p_email, p_password);
 END;
 
--- sp_login_user: 登录验证
--- 参数：p_phone_number
--- 说明：根据手机号查询用户信息（密码验证在 Java 端进行）
+-- sp_login_user: 登入驗證
+-- 參數：p_phone_number
+-- 說明：根據手機號碼查詢使用者資訊（密碼驗證在 Java 端進行）
 CREATE PROCEDURE sp_login_user(
     IN p_phone_number VARCHAR(20)
 )
@@ -47,9 +47,9 @@ BEGIN
     WHERE phone_number = p_phone_number;
 END;
 
--- sp_get_user_by_id: 根据 ID 获取用户
--- 参数：p_user_id
--- 说明：查询指定用户的基本信息
+-- sp_get_user_by_id: 根據 ID 取得使用者
+-- 參數：p_user_id
+-- 說明：查詢指定使用者的基本資訊
 CREATE PROCEDURE sp_get_user_by_id(
     IN p_user_id BIGINT
 )
@@ -59,9 +59,9 @@ BEGIN
     WHERE user_id = p_user_id;
 END;
 
--- sp_get_user_by_phone: 根据手机号获取用户
--- 参数：p_phone_number
--- 说明：检查手机号是否已注册
+-- sp_get_user_by_phone: 根據手機號碼取得使用者
+-- 參數：p_phone_number
+-- 說明：檢查手機號碼是否已註冊
 CREATE PROCEDURE sp_get_user_by_phone(
     IN p_phone_number VARCHAR(20)
 )
@@ -72,33 +72,30 @@ BEGIN
 END;
 
 -- =============================================
--- Post 相关 Stored Procedure
+-- Post 相關 Stored Procedure
 -- =============================================
 
--- sp_create_post: 新增发文
--- 参数：p_user_id, p_content, p_image
--- 说明：将新发文数据插入 post 表
+-- sp_create_post: 新增發文
+-- 參數：p_user_id, p_content, p_image
+-- 說明：將新發文資料插入 post 表
 CREATE PROCEDURE sp_create_post(
     IN p_user_id BIGINT,
     IN p_content TEXT,
-    IN p_image VARCHAR(255),
-    OUT p_post_id BIGINT
+    IN p_image VARCHAR(255)
 )
 BEGIN
+    DECLARE new_post_id BIGINT;
     INSERT INTO post (user_id, content, image)
     VALUES (p_user_id, p_content, p_image);
-    
-    SET p_post_id = LAST_INSERT_ID();
-    
-    -- 返回新创建的发文信息
+    SET new_post_id = LAST_INSERT_ID();
     SELECT p.post_id, p.user_id, u.user_name, p.content, p.image, p.created_at
     FROM post p
     JOIN user u ON p.user_id = u.user_id
-    WHERE p.post_id = p_post_id;
+    WHERE p.post_id = new_post_id;
 END;
 
--- sp_get_all_posts: 获取所有发文
--- 说明：按时间倒序列出所有发文，包含发文者名称
+-- sp_get_all_posts: 取得所有發文
+-- 說明：按時間倒序列出所有發文，包含發文者名稱
 CREATE PROCEDURE sp_get_all_posts()
 BEGIN
     SELECT p.post_id, p.user_id, u.user_name, p.content, p.image, p.created_at
@@ -107,9 +104,9 @@ BEGIN
     ORDER BY p.created_at DESC;
 END;
 
--- sp_get_post_by_id: 根据 ID 获取发文
--- 参数：p_post_id
--- 说明：查询指定发文的详细信息
+-- sp_get_post_by_id: 根據 ID 取得發文
+-- 參數：p_post_id
+-- 說明：查詢指定發文的詳細資訊
 CREATE PROCEDURE sp_get_post_by_id(
     IN p_post_id BIGINT
 )
@@ -120,9 +117,9 @@ BEGIN
     WHERE p.post_id = p_post_id;
 END;
 
--- sp_update_post: 更新发文
--- 参数：p_post_id, p_user_id, p_content, p_image
--- 说明：更新指定发文的内容（需验证是否为发文者）
+-- sp_update_post: 更新發文
+-- 參數：p_post_id, p_user_id, p_content, p_image
+-- 說明：更新指定發文的內容（需驗證是否為發文者）
 CREATE PROCEDURE sp_update_post(
     IN p_post_id BIGINT,
     IN p_user_id BIGINT,
@@ -134,16 +131,15 @@ BEGIN
     SET content = p_content, image = p_image
     WHERE post_id = p_post_id AND user_id = p_user_id;
     
-    -- 返回更新后的发文信息
     SELECT p.post_id, p.user_id, u.user_name, p.content, p.image, p.created_at
     FROM post p
     JOIN user u ON p.user_id = u.user_id
     WHERE p.post_id = p_post_id;
 END;
 
--- sp_delete_post: 删除发文
--- 参数：p_post_id, p_user_id
--- 说明：删除指定发文（需验证是否为发文者）
+-- sp_delete_post: 刪除發文
+-- 參數：p_post_id, p_user_id
+-- 說明：刪除指定發文（需驗證是否為發文者）
 CREATE PROCEDURE sp_delete_post(
     IN p_post_id BIGINT,
     IN p_user_id BIGINT
@@ -154,34 +150,31 @@ BEGIN
 END;
 
 -- =============================================
--- Comment 相关 Stored Procedure
+-- Comment 相關 Stored Procedure
 -- =============================================
 
 -- sp_add_comment: 新增留言
--- 参数：p_user_id, p_post_id, p_content
--- 说明：将新留言数据插入 comment 表
+-- 參數：p_user_id, p_post_id, p_content
+-- 說明：將新留言資料插入 comment 表
 CREATE PROCEDURE sp_add_comment(
     IN p_user_id BIGINT,
     IN p_post_id BIGINT,
-    IN p_content TEXT,
-    OUT p_comment_id BIGINT
+    IN p_content TEXT
 )
 BEGIN
+    DECLARE new_comment_id BIGINT;
     INSERT INTO comment (user_id, post_id, content)
     VALUES (p_user_id, p_post_id, p_content);
-    
-    SET p_comment_id = LAST_INSERT_ID();
-    
-    -- 返回新创建的留言信息
+    SET new_comment_id = LAST_INSERT_ID();
     SELECT c.comment_id, c.post_id, c.user_id, u.user_name, c.content, c.created_at
     FROM comment c
     JOIN user u ON c.user_id = u.user_id
-    WHERE c.comment_id = p_comment_id;
+    WHERE c.comment_id = new_comment_id;
 END;
 
--- sp_get_comments_by_post_id: 获取发文的所有留言
--- 参数：p_post_id
--- 说明：按时间正序列出指定发文的所有留言
+-- sp_get_comments_by_post_id: 取得發文的所有留言
+-- 參數：p_post_id
+-- 說明：按時間正序列出指定發文的所有留言
 CREATE PROCEDURE sp_get_comments_by_post_id(
     IN p_post_id BIGINT
 )
@@ -193,9 +186,9 @@ BEGIN
     ORDER BY c.created_at ASC;
 END;
 
--- sp_delete_comment: 删除留言
--- 参数：p_comment_id, p_user_id
--- 说明：删除指定留言（需验证是否为留言者）
+-- sp_delete_comment: 刪除留言
+-- 參數：p_comment_id, p_user_id
+-- 說明：刪除指定留言（需驗證是否為留言者）
 CREATE PROCEDURE sp_delete_comment(
     IN p_comment_id BIGINT,
     IN p_user_id BIGINT

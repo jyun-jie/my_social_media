@@ -8,9 +8,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import project.entity.User;
-import project.repository.UserRepository;
-
-import java.util.Optional;
+import project.repository.UserRepositoryCustom;
+import project.service.serviceImpl.UserDetailsServiceImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -19,7 +18,7 @@ import static org.mockito.Mockito.*;
 class UserDetailsServiceImplTest {
 
     @Mock
-    private UserRepository userRepository;
+    private UserRepositoryCustom userRepositoryCustom;
 
     @InjectMocks
     private UserDetailsServiceImpl userDetailsService;
@@ -33,7 +32,7 @@ class UserDetailsServiceImplTest {
         user.setPhoneNumber(phoneNumber);
         user.setPassword("hashedPassword");
 
-        when(userRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.of(user));
+        when(userRepositoryCustom.findByPhoneNumber(phoneNumber)).thenReturn(user);
 
         // Act
         UserDetails userDetails = userDetailsService.loadUserByUsername(phoneNumber);
@@ -43,20 +42,20 @@ class UserDetailsServiceImplTest {
         assertEquals("1", userDetails.getUsername());
         assertEquals("hashedPassword", userDetails.getPassword());
 
-        verify(userRepository).findByPhoneNumber(phoneNumber);
+        verify(userRepositoryCustom).findByPhoneNumber(phoneNumber);
     }
 
     @Test
     void loadUserByUsername_UserNotFound_ShouldThrowException() {
         // Arrange
         String phoneNumber = "0999999999";
-        when(userRepository.findByPhoneNumber(phoneNumber)).thenReturn(Optional.empty());
+        when(userRepositoryCustom.findByPhoneNumber(phoneNumber)).thenReturn(null);
 
         // Act & Assert
         assertThrows(UsernameNotFoundException.class, () ->
                 userDetailsService.loadUserByUsername(phoneNumber));
 
-        verify(userRepository).findByPhoneNumber(phoneNumber);
+        verify(userRepositoryCustom).findByPhoneNumber(phoneNumber);
     }
 
     @Test
@@ -68,7 +67,7 @@ class UserDetailsServiceImplTest {
         user.setPhoneNumber("0912345678");
         user.setPassword("hashedPassword");
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepositoryCustom.findById(userId)).thenReturn(user);
 
         // Act
         UserDetails userDetails = userDetailsService.loadUserById(userId);
@@ -78,19 +77,19 @@ class UserDetailsServiceImplTest {
         assertEquals("1", userDetails.getUsername());
         assertEquals("hashedPassword", userDetails.getPassword());
 
-        verify(userRepository).findById(userId);
+        verify(userRepositoryCustom).findById(userId);
     }
 
     @Test
     void loadUserById_UserNotFound_ShouldThrowException() {
         // Arrange
         Long userId = 999L;
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        when(userRepositoryCustom.findById(userId)).thenReturn(null);
 
         // Act & Assert
         assertThrows(UsernameNotFoundException.class, () ->
                 userDetailsService.loadUserById(userId));
 
-        verify(userRepository).findById(userId);
+        verify(userRepositoryCustom).findById(userId);
     }
 }

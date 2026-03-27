@@ -24,7 +24,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
-      window.location.href = '/login'
+      alert('登入已過期，請重新登入')
+      window.location.reload()
     }
     return Promise.reject(error)
   }

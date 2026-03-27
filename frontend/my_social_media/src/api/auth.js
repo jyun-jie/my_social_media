@@ -6,5 +6,8 @@ export const authApi = {
   },
   register(userData) {
     return api.post('/auth/register', userData)
+  },
+  refresh() {
+    return api.post('/auth/refresh')
   }
 }

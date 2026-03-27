@@ -79,52 +79,55 @@ const cancel = () => {
 
     <textarea
       v-model="content"
-      placeholder="分享你的想法..."
-      rows="4"
+      placeholder="有什麼新鮮事？"
+      rows="3"
       :disabled="isLoading"
       maxlength="1000"
     ></textarea>
 
-    <div class="char-count">{{ content.length }} / 1000</div>
+    <div class="form-footer">
+      <div class="char-count">{{ content.length }} / 1000</div>
+      <div class="form-actions">
+        <button v-if="editPost" @click="cancel" :disabled="isLoading" class="cancel-btn">
+          取消
+        </button>
+        <button @click="submit" :disabled="isLoading" class="submit-btn">
+          {{ isLoading ? '處理中...' : (editPost ? '更新' : '發布') }}
+        </button>
+      </div>
+    </div>
 
     <div v-if="errorMessage" class="error-message">
       {{ errorMessage }}
-    </div>
-
-    <div class="form-actions">
-      <button @click="submit" :disabled="isLoading" class="submit-btn">
-        {{ isLoading ? '處理中...' : (editPost ? '更新' : '發布') }}
-      </button>
-      <button v-if="editPost" @click="cancel" :disabled="isLoading" class="cancel-btn">
-        取消
-      </button>
     </div>
   </div>
 </template>
 
 <style scoped>
 .post-form {
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 1rem;
-  background: var(--color-background-soft);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .post-form h3 {
   color: var(--color-heading);
   margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  display: none;
 }
 
 textarea {
   width: 100%;
-  padding: 0.75rem;
+  padding: 1rem;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
-  background: var(--color-background);
+  border-radius: 0.75rem;
+  background: var(--color-background-soft);
   color: var(--color-text);
   font-size: 1rem;
-  resize: vertical;
+  resize: none;
   font-family: inherit;
+  box-sizing: border-box;
+  line-height: 1.5;
 }
 
 textarea:focus {
@@ -137,27 +140,31 @@ textarea:disabled {
   cursor: not-allowed;
 }
 
-.char-count {
-  text-align: right;
-  font-size: 0.8rem;
-  color: var(--color-text);
-  opacity: 0.7;
-  margin-top: 0.25rem;
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
 }
 
-.error-message {
-  color: #e74c3c;
-  background: #fdf2f2;
-  padding: 0.75rem;
-  border-radius: 4px;
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
+.char-count {
+  font-size: 0.85rem;
+  color: var(--color-text);
+  opacity: 0.6;
 }
 
 .form-actions {
   display: flex;
   gap: 0.5rem;
+}
+
+.error-message {
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.1);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
   margin-top: 0.75rem;
+  font-size: 0.9rem;
 }
 
 .submit-btn {
@@ -165,9 +172,11 @@ textarea:disabled {
   background: hsla(160, 100%, 37%, 1);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 9999px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  font-weight: bold;
+  transition: background 0.3s;
 }
 
 .submit-btn:hover:not(:disabled) {
@@ -180,16 +189,18 @@ textarea:disabled {
 }
 
 .cancel-btn {
-  padding: 0.5rem 1.5rem;
-  background: #95a5a6;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  transition: all 0.3s;
 }
 
 .cancel-btn:hover:not(:disabled) {
-  background: #7f8c8d;
+  background: var(--color-background-soft);
+  border-color: var(--color-text);
 }
 </style>

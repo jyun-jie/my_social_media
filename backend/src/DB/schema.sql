@@ -1,4 +1,6 @@
 
+--DDL
+
 CREATE TABLE `user` (
                          `user_id` BIGINT AUTO_INCREMENT PRIMARY KEY,
                          `user_name` VARCHAR(50) NOT NULL,

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { postApi } from '../api/post'
+import CommentList from './CommentList.vue'
 
 const props = defineProps({
   currentUserId: {
@@ -60,8 +61,6 @@ defineExpose({ fetchPosts })
 
 <template>
   <div class="post-list">
-    <h3>所有發文</h3>
-
     <div v-if="isLoading" class="loading">載入中...</div>
 
     <div v-else-if="errorMessage" class="error-message">
@@ -69,23 +68,33 @@ defineExpose({ fetchPosts })
     </div>
 
     <div v-else-if="posts.length === 0" class="empty-message">
-      目前沒有發文
+      目前沒有發文，快來發布第一篇吧！
     </div>
 
     <div v-else class="posts">
       <div v-for="post in posts" :key="post.postId" class="post-card">
         <div class="post-header">
-          <span class="author">{{ post.userName }}</span>
-          <span class="date">{{ formatDate(post.createdAt) }}</span>
+          <div class="post-author">
+            <div class="avatar">{{ post.userName?.charAt(0) }}</div>
+            <span class="author-name">{{ post.userName }}</span>
+          </div>
+          <span class="post-date">{{ formatDate(post.createdAt) }}</span>
         </div>
 
         <div class="post-content">
           {{ post.content }}
         </div>
 
-        <div v-if="post.userId === currentUserId" class="post-actions">
-          <button @click="emit('edit-post', post)" class="edit-btn">編輯</button>
-          <button @click="deletePost(post.postId)" class="delete-btn">刪除</button>
+        <div class="post-footer">
+          <CommentList
+            :post-id="post.postId"
+            :current-user-id="currentUserId"
+          />
+
+          <div v-if="post.userId === currentUserId" class="post-actions">
+            <button @click="emit('edit-post', post)" class="edit-btn">編輯</button>
+            <button @click="deletePost(post.postId)" class="delete-btn">刪除</button>
+          </div>
         </div>
       </div>
     </div>
@@ -94,95 +103,122 @@ defineExpose({ fetchPosts })
 
 <style scoped>
 .post-list {
-  margin-top: 1.5rem;
-}
-
-.post-list h3 {
-  color: var(--color-heading);
-  margin-bottom: 1rem;
+  /* No additional styles needed */
 }
 
 .loading, .empty-message {
   text-align: center;
-  padding: 2rem;
+  padding: 3rem 1rem;
   color: var(--color-text);
+  opacity: 0.6;
 }
 
 .error-message {
   color: #e74c3c;
-  background: #fdf2f2;
-  padding: 0.75rem;
-  border-radius: 4px;
+  background: rgba(231, 76, 60, 0.1);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin: 1rem;
 }
 
 .posts {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 }
 
 .post-card {
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  transition: background 0.2s;
+}
+
+.post-card:hover {
   background: var(--color-background-soft);
 }
 
 .post-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 0.75rem;
-  font-size: 0.9rem;
 }
 
-.author {
-  font-weight: bold;
+.post-author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: hsla(160, 100%, 37%, 0.2);
   color: hsla(160, 100%, 37%, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
 }
 
-.date {
+.author-name {
+  font-weight: bold;
+  color: var(--color-heading);
+  font-size: 1rem;
+}
+
+.post-date {
+  font-size: 0.85rem;
   color: var(--color-text);
-  opacity: 0.7;
+  opacity: 0.5;
 }
 
 .post-content {
   color: var(--color-text);
   line-height: 1.6;
   white-space: pre-wrap;
+  font-size: 1rem;
   margin-bottom: 0.75rem;
+}
+
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .post-actions {
   display: flex;
   gap: 0.5rem;
-  justify-content: flex-end;
+}
+
+.edit-btn, .delete-btn {
+  padding: 0.35rem 0.75rem;
+  background: transparent;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
 }
 
 .edit-btn {
-  padding: 0.4rem 0.8rem;
-  background: hsla(160, 100%, 37%, 1);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.85rem;
+  color: hsla(160, 100%, 37%, 1);
+  border: 1px solid hsla(160, 100%, 37%, 1);
 }
 
 .edit-btn:hover {
-  background: hsla(160, 100%, 37%, 0.8);
+  background: hsla(160, 100%, 37%, 0.1);
 }
 
 .delete-btn {
-  padding: 0.4rem 0.8rem;
-  background: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.85rem;
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
 }
 
 .delete-btn:hover {
-  background: #c0392b;
+  background: rgba(231, 76, 60, 0.1);
 }
 </style>

@@ -4,6 +4,7 @@ import Login from './components/Login.vue'
 import Register from './components/Register.vue'
 import PostForm from './components/PostForm.vue'
 import PostList from './components/PostList.vue'
+import { authApi } from './api/auth'
 
 const currentView = ref('login')
 const isLoggedIn = ref(false)
@@ -12,8 +13,12 @@ const editingPost = ref(null)
 const postListRef = ref(null)
 
 // 自動登出計時器
-const TIMEOUT_DURATION = 15 * 60 * 1000 //  分鐘（毫秒）
+const TIMEOUT_DURATION = 15 * 60 * 1000 // 15 分鐘（毫秒）
+const REFRESH_THRESHOLD = 5 * 60 * 1000 // 剩餘 5 分鐘時刷新
+const REFRESH_CHECK_INTERVAL = 60 * 1000 // 每分鐘檢查一次是否需要刷新
 let timeoutId = null
+let refreshCheckId = null
+let isRefreshing = false // 防止重複刷新
 
 const parseJwtToken = (token) => {
   try {
@@ -23,6 +28,39 @@ const parseJwtToken = (token) => {
     return parseInt(payload.sub)
   } catch (e) {
     return null
+  }
+}
+
+// 檢查 Token 是否即將過期
+const isTokenExpiringSoon = () => {
+  const token = localStorage.getItem('token')
+  if (!token) return false
+  try {
+    const base64Url = token.split('.')[1]
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+    const payload = JSON.parse(window.atob(base64))
+    const exp = payload.exp * 1000
+    const now = Date.now()
+    return (exp - now) < REFRESH_THRESHOLD
+  } catch (e) {
+    return false
+  }
+}
+
+// 刷新 Token（只在即將過期時執行）
+const refreshToken = async () => {
+  if (isRefreshing || !isTokenExpiringSoon()) return
+  isRefreshing = true
+  try {
+    const response = await authApi.refresh()
+    if (response.data.code === 200) {
+      localStorage.setItem('token', response.data.message)
+      currentUserId.value = parseJwtToken(response.data.message)
+    }
+  } catch (error) {
+    console.error('Token 刷新失敗:', error)
+  } finally {
+    isRefreshing = false
   }
 }
 
@@ -50,6 +88,8 @@ const startListening = () => {
   activityEvents.forEach(event => {
     document.addEventListener(event, handleUserActivity, { passive: true })
   })
+  // 定期檢查是否需要刷新 Token
+  refreshCheckId = setInterval(refreshToken, REFRESH_CHECK_INTERVAL)
 }
 
 const stopListening = () => {
@@ -59,6 +99,10 @@ const stopListening = () => {
   if (timeoutId) {
     clearTimeout(timeoutId)
     timeoutId = null
+  }
+  if (refreshCheckId) {
+    clearInterval(refreshCheckId)
+    refreshCheckId = null
   }
 }
 

@@ -21,13 +21,17 @@
 - 以交易機制保證跨表更新的一致性
 - 透過 JWT 驗證與授權，保護 API 路徑
 - 通常 seed 資料放在 data.sql，reset_dev_data.sql 用於開發/測試時的重置
-- 
+
 ### 從零開始建立 Backend（From Zero - Backend）
 - 目的：提供一組可直接從空資料庫建立整套後端環境的步驟，包含資料庫初始化、種子資料、儲存程序、與專案啟動。
 - 需求與環境：Java 17+、Maven、MySQL、Git、JDK、資料庫帳號與密碼。
 - 步驟：
   1) 建立資料庫
-     - 例如：CREATE DATABASE my_social_media;
+     - 1. mysql -u root -p ;
+     - 2. CREATE DATABASE my_social_media ; 
+     - 3. CREATE USER admin@localhost IDENTIFIED BY '123456' ;
+     - 4. GRANT ALL PRIVILEGES ON my_social_media.* TO 'admin'@'localhost' ;
+     - 5. FLUSH PRIVILEGES ;
   2) 導入資料庫結構與預設資料
      - 導入 schema：`backend/src/DB/schema.sql`
      - 重置資料：`backend/src/DB/reset_dev_data.sql`
